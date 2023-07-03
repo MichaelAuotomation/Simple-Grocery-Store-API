@@ -1,0 +1,1546 @@
+{
+	"info": {
+		"_postman_id": "6f6d0890-fbc6-48c2-8319-4828e5360f22",
+		"name": "Simple Grocery Store API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Happy path",
+			"item": [
+				{
+					"name": "Simple Grocery Store API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "160a321a-52cd-4b00-a5f1-a6a3439d8984",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "d81be651-fa61-4e14-b63a-d2f0f91b6e63",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}",
+						"description": "This API allows you to place a grocery order which will be ready for pick-up in the store.\r\n\r\nThe API is available at https://simple-grocery-store-api.glitch.me"
+					},
+					"response": []
+				},
+				{
+					"name": "Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "160a321a-52cd-4b00-a5f1-a6a3439d8984",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status is up\", function () {\r",
+									"    \r",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "6bf5b503-7ee5-43a9-86b1-47bf9660dc34",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/status",
+						"description": "StartFragment\n\nReturns the status of the API."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf6c21bc-5ad3-4414-8ba5-22cd67e31b0b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"At least one available product exists\", () =>{\r",
+									"var response = pm.response.json();\r",
+									"pm.expect(response).to.be.an(\"array\");\r",
+									"pm.expect(response.length).to.be.above(0);\r",
+									"var product = response[0];\r",
+									"pm.expect(product).to.be.an(\"object\");\r",
+									"pm.expect(product).to.haveOwnProperty(\"id\");\r",
+									"pm.expect(product.id).to.be.a(\"number\");\r",
+									"pm.expect(product).to.haveOwnProperty(\"inStock\");\r",
+									"pm.expect(product.inStock).to.be.true;\r",
+									"pm.environment.set(\"productId\", response[0].id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "b67e3293-6b6b-4a03-9705-8cd9eabe2b2f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "eggs",
+									"description": "Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "",
+									"description": "Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed.",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "available",
+									"value": "false",
+									"description": "Specifies the availability of the products. By default, all products will be displayed.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46bc85cf-e46a-4ec2-878f-c5d1b186dd08",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct product was retrieved\", () => {\r",
+									"    var requestedProductId = pm.variables.get(\"productId\");\r",
+									"    console.log(requestedProductId);\r",
+									"    pm.expect(response.id).to.eql(requestedProductId);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product name\", function () {\r",
+									"    pm.expect(response.name).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product price\", function () {\r",
+									"    pm.expect(response.price).to.be.a(\"number\");\r",
+									"    pm.expect(response.price).to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product in stock\", function () {\r",
+									"    pm.expect(response.inStock).to.be.a(\"boolean\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "bf92770c-0020-4142-a25a-85382db37d8d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:productId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":productId"
+							],
+							"query": [
+								{
+									"key": "product-label",
+									"value": "",
+									"description": "Returns the product label in PDF format.",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "{{productId}}",
+									"description": "Specifies the product's id you wish to retrieve.",
+									"type": "string"
+								}
+							]
+						},
+						"description": "StartFragment\n\nReturns a single product from the inventory."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c727d8bf-a186-4b8d-83cd-f8f2fdd3c579",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "9c9b5a14-5334-44f7-a49f-4cabd7a9b3a4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"description": "Specifies the id of the cart you wish to retrieve.",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Returns a cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2bf5ba8-c10b-4401-b6a5-cf66802fd6ac",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "514b3fe3-cb0c-4baf-87bf-8fde6fa63ebb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Returns the items in a cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e5ee1bb0-32d4-4fb6-96a0-522a44a770c2",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has a valid cartId\", () =>{\r",
+									"var response = pm.response.json();\r",
+									"pm.expect(response).to.be.an(\"object\");\r",
+									"pm.expect(response).to.haveOwnProperty(\"cartId\");\r",
+									"pm.expect(response.cartId).to.be.a(\"string\");\r",
+									"pm.collectionVariables.set(\"cartId\", response.cartId);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "8ccfea72-474e-4b8a-a1ba-5d86d5df6fba",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/carts",
+						"description": "Creates a new cart and returns the id in the response body."
+					},
+					"response": []
+				},
+				{
+					"name": "Add an item to cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f2d591d-e2b7-4b4e-9d07-d4c422a2a0e0",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Item was created\",() => {\r",
+									"var response = pm.response.json();\r",
+									"console.log(typeof response.itemId);\r",
+									"pm.expect(response).to.be.an(\"object\");\r",
+									"pm.expect(response.created).to.be.true;\r",
+									"pm.expect(response).to.haveOwnProperty(\"itemId\");\r",
+									"pm.expect(response.itemId).to.be.a(\"number\");\r",
+									"pm.environment.set(\"lastAddedItemId\",response.itemId);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "918a5965-3176-4b00-b8c7-83b6ade836a4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"productId\": 4646\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Allows the addition of items to an existing cart. Only one item can be added at a time."
+					},
+					"response": []
+				},
+				{
+					"name": "Modify an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "92d10abd-f030-4bc1-8ffb-eb4a6516b8da",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b8cf02b2-747d-4262-9653-fe38569bbe1c",
+								"exec": [
+									"function getRandomNumber(maxValue) {\r",
+									"    return Math.floor(Math.random() * maxValue);\r",
+									"};\r",
+									"pm.environment.set(\"randomQuantity\", getRandomNumber(14));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "e2b36ba2-621e-44a5-9cda-c5c30ced543e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": {{randomQuantity}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Allows modifying information about an item in the cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9e10654-f2b6-4779-b7ba-9f7ed9606580",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "1e5f665b-0a63-481b-a29a-9daa73eef617",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\": 6483,\r\n    \"quantity\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Replace an item in the cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8333cf86-a88f-4959-9e2d-669f5e97fa3b",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "d2b549c8-06d0-4ae6-92af-0f32291e3ce4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Deletes an item in the cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Register a new API client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5b0b38d-41f8-4f6a-bce7-5f0529014595",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has a valid accessToken\",() => {\r",
+									"var response = pm.response.json();\r",
+									"pm.expect(response).to.be.an(\"object\");\r",
+									"pm.expect(response).to.haveOwnProperty(\"accessToken\");\r",
+									"pm.expect(response.accessToken).to.be.a(\"string\");\r",
+									"pm.environment.set(\"accessToken\", response.accessToken);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "145288a5-c1c3-4db4-94fb-95ffe07526f7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"clientName\": \"Postman on John's computer\",\r\n    \"clientEmail\": \"{{$randomEmail}}\"\r\n\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api-clients",
+						"description": "Some endpoints may require authentication. To submit or view an order, you need to register your API client and obtain an access token.\r\n\r\nThe endpoints that require authentication expect a bearer token sent in the Authorization header."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ee53ca23-5edf-4f1c-965d-cd2444237648",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has a valid orderId\", ()  => {\r",
+									"var response = pm.response.json();\r",
+									"pm.expect(response).to.be.an(\"object\");\r",
+									"pm.expect(response.created).to.be.true;\r",
+									"pm.expect(response).to.haveOwnProperty(\"orderId\");\r",
+									"pm.expect(response.orderId).to.be.a(\"string\");\r",
+									"pm.environment.set(\"orderId\", response.orderId);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "622cd533-fdd0-412b-b78c-653650813908",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cartId\": \"{{cartId}}\",\r\n    \"customerName\": \"{{$randomFullName}}\",\r\n    \"comment\": \"New Order\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/orders",
+						"description": "The request body needs to be in JSON format. Once the order has been successfully submitted, the cart is deleted."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6d2befa3-b11a-4cfe-8107-5719eb59677b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Created order is in the list\", () => {\r",
+									"var order = response.find((order) => order.id === pm.environment.get(\"orderId\"));\r",
+									"pm.expect(order).to.be.an(\"object\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "4f638353-b361-4293-98e0-5adaeca15c4b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns all orders created by the API client."
+					},
+					"response": []
+				},
+				{
+					"name": "Update an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b313f748-3f0d-4fb3-9e4c-51a75cd94f3d",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "39c74c00-1b64-479b-9a16-cf50fd1314b9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"customerName\": \"Joe Doe\",\r\n \"comment\": \"Name is updated at 11:18\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderId}}",
+									"description": "The order id.",
+									"type": "string"
+								}
+							]
+						},
+						"description": "The request body needs to be in JSON format."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f0bacb48-96c2-4bb8-a7a3-f9710543d10c",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "5d31dedf-7a40-472d-93d5-679adf98c84a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Delete an order."
+					},
+					"response": []
+				},
+				{
+					"name": "Check order deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1cfe89f7-a0bf-4e1d-963f-b380256d6d0c",
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"var response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct orderId was retrieved\", () => {\r",
+									"    pm.expect(response).to.haveOwnProperty(\"error\");\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.error).to.be.a(\"string\");\r",
+									"    pm.expect(response.error).to.contain(pm.variables.get(\"orderId\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "81c18b88-d791-4e96-a54b-416be9759511",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"query": [
+								{
+									"key": "invoice",
+									"value": null,
+									"description": "Show the PDF invoice.",
+									"type": "text",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{orderId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Returns a single order."
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "ae4aa16b-fe27-4a76-a0bc-a5fcdafe3847"
+		},
+		{
+			"name": "Missing authentication",
+			"item": [
+				{
+					"name": "Missing header",
+					"item": [
+						{
+							"name": "Create a new order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ee53ca23-5edf-4f1c-965d-cd2444237648",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "427e8329-cc00-4694-9d18-d9338860f400",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"x6kAhc820OCPlSSIHkdHq\",\r\n    \"customerName\": \"{{$randomFullName}}\",\r\n    \"comment\": \"New Order\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "The request body needs to be in JSON format. Once the order has been successfully submitted, the cart is deleted."
+							},
+							"response": []
+						},
+						{
+							"name": "Get all orders",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f00454f2-9b9c-44f2-af2e-0a8b27427af1",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "d3c3e92e-b19a-44c0-8d75-afe83f70bddd",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Returns all orders created by the API client."
+							},
+							"response": []
+						}
+					],
+					"_postman_id": "c27e4514-3dd5-4550-b71c-6caf70b0e954",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "14f19a7b-6e44-4d99-b56c-d281010ec811",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5c8ecd8e-131e-45b7-995a-b6a95e77e418",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Error message\", () => {",
+									"    var response = pm.response.json();",
+									"    pm.expect(response.error).to.eql(\"Missing Authorization header.\")",
+									"});"
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Invalid token",
+					"item": [
+						{
+							"name": "Create a new order",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ee53ca23-5edf-4f1c-965d-cd2444237648",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "0b09e2b3-38c7-48fa-be02-0abe86da85c0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "7bdb075a6481d6781bbf29ab7c3fb0afc9f5619ed981cd9053131c7fdfdaa5cb",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"cartId\": \"x6kAhc820OCPlSSIHkdHq\",\r\n    \"customerName\": \"{{$randomFullName}}\",\r\n    \"comment\": \"New Order\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "The request body needs to be in JSON format. Once the order has been successfully submitted, the cart is deleted."
+							},
+							"response": []
+						},
+						{
+							"name": "Get all orders",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f00454f2-9b9c-44f2-af2e-0a8b27427af1",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "ebb1cec0-92e4-4342-b206-1689bd6449c2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "7bdb075a6481d6781bbf29ab7c3fb0afc9f5619ed981cd9053131c7fdfdaa5c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/orders",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Returns all orders created by the API client."
+							},
+							"response": []
+						}
+					],
+					"_postman_id": "bbafae4d-3572-44a8-b63f-6c7ce88c500a",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0d05413b-a4c6-462f-9896-3127bb742370",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "440a326c-8c8c-41f3-86d3-6730fe0804e6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Error message\", () => {",
+									"    var response = pm.response.json();",
+									"    pm.expect(response.error).to.eql(\"Invalid bearer token.\")",
+									"});"
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"_postman_id": "ddc30bc5-b360-469f-b1e2-30d3c8e7437d",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "07042841-f87a-4f87-b5a3-8bf9ff99666d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "63e92a62-f01d-470a-b04b-44aa71bd4bf1",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Invalid inputs",
+			"item": [
+				{
+					"name": "Get all products - Invalid category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf6c21bc-5ad3-4414-8ba5-22cd67e31b0b",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message\", () => {\r",
+									"     var response = pm.response.json();\r",
+									"    pm.expect(response.error).to.have.string(\"Invalid value for query parameter 'category'.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "d9577f9a-f1a7-463c-9771-e6a160c64b00",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?category=invalid-categor",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "invalid-categor",
+									"description": "Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.",
+									"type": "text"
+								},
+								{
+									"key": "results",
+									"value": "",
+									"description": "Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed.",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "available",
+									"value": "",
+									"description": "Specifies the availability of the products. By default, all products will be displayed.",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results > maximum",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf6c21bc-5ad3-4414-8ba5-22cd67e31b0b",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message\", () => {\r",
+									"     var response = pm.response.json();\r",
+									"    pm.expect(response.error).to.have.string(\"Invalid value for query parameter 'results'.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "87897dcb-94d8-4319-a308-feb7eaff02c3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=21",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "",
+									"description": "Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "21",
+									"description": "Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed.",
+									"type": "text"
+								},
+								{
+									"key": "available",
+									"value": "",
+									"description": "Specifies the availability of the products. By default, all products will be displayed.",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results < minimum",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf6c21bc-5ad3-4414-8ba5-22cd67e31b0b",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message\", () => {\r",
+									"     var response = pm.response.json();\r",
+									"     var expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\"\r",
+									"    pm.expect(response.error).to.eql(expectedError);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "9292077d-b2bd-45de-9d20-553196066abb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=-1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "",
+									"description": "Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "-1",
+									"description": "Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed."
+								},
+								{
+									"key": "available",
+									"value": "",
+									"description": "Specifies the availability of the products. By default, all products will be displayed.",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results = 0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf6c21bc-5ad3-4414-8ba5-22cd67e31b0b",
+								"exec": [
+									"console.log(pm.environment.name);\r",
+									"\r",
+									"if (pm.environment.name === \"Testing\") {\r",
+									"    pm.test(\"Status code is 400\", function () {\r",
+									"        pm.response.to.have.status(400);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Error message\", () => {\r",
+									"        var response = pm.response.json();\r",
+									"        var expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\"\r",
+									"        pm.expect(response.error).to.eql(expectedError);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "1cbeabab-cee8-459b-9456-8e53b963057f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "",
+									"description": "Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "0",
+									"description": "Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed."
+								},
+								{
+									"key": "available",
+									"value": "",
+									"description": "Specifies the availability of the products. By default, all products will be displayed.",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Returns a list of products from the inventory."
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "9b7bb90d-458e-4d83-857a-15e3a144a27f"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "05870dc0-2d13-4b49-8c6c-521e2bf243d9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e8e2af0f-31ec-4578-9d06-236d21244fb3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "d321065c-2f4b-461a-b028-9601a11d27f7",
+			"key": "cartId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
